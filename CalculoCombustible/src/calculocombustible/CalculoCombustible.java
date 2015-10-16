@@ -37,6 +37,8 @@ public class CalculoCombustible {
         double W[] = new double[19];
         
         double WX[] = new double[11];
+        
+
         System.out.println("Ingrese Roce Piso: ");
         entrada[0] = Read.nextDouble();
         
@@ -93,11 +95,16 @@ public class CalculoCombustible {
         double A,B,C,D,E,F,G,H;
         double WA,WB,WC,WD,WE,WF,WG,WH;
         double factorDeAprendizaje= 0.5;
+        double funcionDeActivacion= 1;
         
         while(resultado == false){
+            for(int i= 0; i<11; i++){
+                WX[i]= pesos[i]*entrada[i];
+                //System.out.println("Valor "+i+" es: "+WX[i]);
+            }
             //Nivel Uno
             //A= Roce Piso+Roce Aire
-            A= WX[0]+WX[1];
+            A= WX[0]+WX[1]*funcionDeActivacion;
             WA= A*W[11];
             //B= aceleracion*Cant.Frenado*Pendiente
             B= WX[5]*WX[6]*WX[7];
@@ -121,14 +128,22 @@ public class CalculoCombustible {
             WG= G*W[17];
             //Nivel seis
             H= G*C;
-            
-            if(H== salidaEsperada){
-                System.out.print("Salida es: "+H);
+            float out= (float)H;
+            if(H > salidaEsperada-1 && H < salidaEsperada+1){                
+                System.out.print("Salida es: "+out);
+                resultado= true;
             }else{
+                System.out.println("********************************");
+                System.out.print("Salida es: "+out);
+                System.out.println("Recalculando Pesos....");
+                for(int j= 0; j<pesos.length; j++){
+                    pesos[j]= ajustarPesos(pesos[j],salidaEsperada,entrada[j]);
+                }
+                funcionDeActivacion= 1/(1+Math.exp(A));
                 
             }
         }
-        
+        System.out.println("Fin?");
     }
     
 }
